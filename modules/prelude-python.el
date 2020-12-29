@@ -61,21 +61,23 @@
          (or save-buffer-coding-system
              buffer-file-coding-system)))
     (if coding-system
-        (symbol-name
-         (or (coding-system-get coding-system 'mime-charset)
-             (coding-system-change-eol-conversion coding-system nil)))
-      "ascii-8bit")))
+        (let ((charset-name
+               (symbol-name
+                (or (coding-system-get coding-system 'mime-charset)
+                    (coding-system-change-eol-conversion coding-system nil)))))
+          (if (not (string-equal charset-name "undecided")) charset-name "utf-8"))
+      "utf-8")))
 
 (defun prelude-python--insert-coding-comment (encoding)
   (let ((newlines (if (looking-at "^\\s *$") "\n" "\n\n")))
-    (insert (format "# coding: %s" encoding) newlines)))
+    (insert (format "#!/usr/bin/env python\n# -*- coding: %s -*-\n" encoding) newlines)))
 
 (defun prelude-python-mode-set-encoding ()
   "Insert a magic comment header with the proper encoding if necessary."
   (save-excursion
     (widen)
     (goto-char (point-min))
-    (when (prelude-python--encoding-comment-required-p)
+    (when t
       (goto-char (point-min))
       (let ((coding-system (prelude-python--detect-encoding)))
         (when coding-system
