@@ -33,11 +33,13 @@
 
 ;;; Code:
 
-(prelude-require-package 'anaconda-mode)
+;;(prelude-require-package 'anaconda-mode)
 
-(when (boundp 'company-backends)
-  (prelude-require-package 'company-anaconda)
-  (add-to-list 'company-backends 'company-anaconda))
+;;(when (boundp 'company-backends)
+;;  (prelude-require-package 'company-anaconda)
+;;  (add-to-list 'company-backends 'company-anaconda))
+
+(prelude-require-package 'elpy)
 
 (require 'electric)
 (require 'prelude-programming)
@@ -87,7 +89,8 @@
 (defun prelude-python-mode-defaults ()
   "Defaults for Python programming."
   (subword-mode +1)
-  (anaconda-mode 1)
+  ;;(anaconda-mode 1)
+  (elpy-enable)
   (eldoc-mode 1)
   (setq-local electric-layout-rules
               '((?: . (lambda ()
@@ -97,6 +100,8 @@
   (when (fboundp #'python-imenu-create-flat-index)
     (setq-local imenu-create-index-function
                 #'python-imenu-create-flat-index))
+
+  (add-hook 'before-save-hook 'elpy-format-code)
   (add-hook 'post-self-insert-hook
             #'electric-layout-post-self-insert-function nil 'local)
   (add-hook 'after-save-hook 'prelude-python-mode-set-encoding nil 'local))
